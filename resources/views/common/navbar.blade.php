@@ -34,6 +34,11 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton">
                         <li class="mb-2">
+                            <div class="dropdown-item border-radius-md">
+                                {{ session("user_name") }}
+                            </div>
+                        </li>
+                        <li class="mb-2">
                             <a class="dropdown-item border-radius-md" href="../pages/profile.php">
                                 <div class="d-flex align-items-center py-1">
                                     <div class="my-auto">

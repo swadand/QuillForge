@@ -1,18 +1,28 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Website;
+use App\Http\Controllers\Team;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Website::class, 'login_page']);
-Route::get('/login', [Website::class, 'login_page']);
-Route::get('/register', [Website::class, 'signup_page']);
+Route::get('login', [Website::class, 'login_page']);
+Route::get('register', [Website::class, 'signup_page']);
 
-Route::get('/u/dashboard', [Website::class, 'dashboard']);
-Route::get('/u/teams', [Website::class, 'view_teams']);
-Route::get('/u/profile', [Website::class, 'view_profile']);
+Route::post('login', [UserController::class, 'validate_login']);
+Route::post('register', [UserController::class, 'register']);
 
-Route::get('/u/logout', [Website::class, 'logout']);
+Route::get('u/dashboard', [Website::class, 'dashboard']);
+Route::get('u/teams', [Website::class, 'view_teams']);
+Route::get('u/profile', [Website::class, 'view_profile']);
+Route::get('editor', [Website::class, 'view_editor']);
+
+Route::get('logout', [Website::class, 'logout']);
+
+// API 
+
+Route::post('team/create', [Team::class, 'create']);
+
     
 /* Route::get('/dashboard', function () {
     return view('dashboard');

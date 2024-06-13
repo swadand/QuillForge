@@ -1,13 +1,17 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
+use App\Models\TeamModel;
 
 class Website extends Controller
 {
     public function login_page()
     {
-        return view("sign-in");
+        if (session("user_id") == null)
+            return view("sign-in");
+        else
+            return redirect('u/dashboard');
     }
 
     public function signup_page()
@@ -22,7 +26,10 @@ class Website extends Controller
 
     public function view_teams()
     {
-        return view('team');
+        $data = TeamModel::Where(["deleted" => 0])->get();
+        session(["data" => $data]);
+
+        return view('team', ["data" => $data]);
     }
 
     public function view_profile()
@@ -30,8 +37,15 @@ class Website extends Controller
         return view('profile');
     }
 
+    public function view_editor()
+    {
+        return view('editor');
+    }
+
     public function logout()
     {
+        session()->forget(['user_id', 'user_name']);
+
         return redirect('/');
     }
 }
