@@ -5,8 +5,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/common/header.php',
-                'resources/common/footer.php',
+                'resources/views/common/header.php',
+                'resources/views/common/footer.php',
             ],
             refresh: true,
         }),
