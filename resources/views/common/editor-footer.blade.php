@@ -1,5 +1,5 @@
 <!--   Core JS Files   -->
-<script src="../assets/js/core/jquery.js"></script>
-<script src="../assets/js/core/popper.min.js"></script>
-<script src="../assets/js/core/bootstrap.min.js"></script>
+<script src="{{ url("assets/js/core/jquery.js") }}"></script>
+<script src="{{ url("assets/js/core/popper.min.js") }}"></script>
+<script src="{{ url("assets/js/core/bootstrap.min.js") }}"></script>
 

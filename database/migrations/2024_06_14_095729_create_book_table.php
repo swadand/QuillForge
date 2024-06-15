@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('title', 10);
             $table->string('cover', 10)->default("");
             $table->longText('content');
-            $table->integer('created_by');
-            $table->integer('owned_by');
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('owned_by')->references('id')->on('users');
             $table->dateTime('created_at');
             $table->integer('status')->default('1');
             $table->integer('deleted')->default('0');

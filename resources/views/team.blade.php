@@ -26,17 +26,21 @@
             <div class="container-fluid px-3">
                 <nav aria-label="breadcrumb" class="d-flex justify-content-between">
                     <p class="h4 font-weight-bolder">Teams</p>
-                    <button class="btn btn-success" type="button" data-bs-target="#create-team"
-                        data-bs-toggle="offcanvas" aria-controls="offcanvasEnd">Create Team</button>
+                    <div>
+                        <button class="btn btn-success" type="button" data-bs-target="#create-team"
+                            data-bs-toggle="offcanvas" aria-controls="offcanvasEnd">Create Team</button>
+                        <button class="btn btn-success" type="button" data-bs-target="#join-team"
+                            data-bs-toggle="offcanvas" aria-controls="offcanvasEnd">Join Team</button>
+                    </div>
                     {{-- OFFCANVAS --}}
-                    <div class="offcanvas offcanvas-end {{ $errors->any() ? 'show' : '' }}" tabindex="-1"
+                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? '' : 'show') : '' }}" tabindex="-1"
                         id="create-team" aria-labelledby="offcanvasEndLabel">
                         <div class="offcanvas-header">
                             <h5 id="offcanvasEndLabel" class="offcanvas-title">Create a New Team</h5>
                             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
                                 aria-label="Close"></button>
                         </div>
-                        <form action="{{ url('team/create') }}" method="post">
+                        <form action="{{ url('u/team/create') }}" method="post">
                             @csrf
                             <div class="offcanvas-body mx-0 flex-grow-0">
                                 <div class="input-group input-group-outline my-3">
@@ -84,6 +88,34 @@
                             </div>
                         </form>
                     </div>
+
+                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? "show" : ($errors->has('team_id') ? 'show' : '')) : ''  }}" tabindex="-1"
+                        id="join-team" aria-labelledby="offcanvasEndLabel">
+                        <div class="offcanvas-header">
+                            <h5 id="offcanvasEndLabel" class="offcanvas-title">Join a Team</h5>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
+                        </div>
+                        <form action="{{ url('u/team/join') }}" method="post">
+                            @csrf
+                            <div class="offcanvas-body mx-0 flex-grow-0">
+                                <div class="input-group input-group-outline my-3">
+                                    <label class="form-label">Team Id</label>
+                                    <input class="form-control" type="text" name="team_id" id="team_name">
+                                </div>
+                                @error('team_id')
+                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                @enderror
+                                @error('join-error')
+                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                @enderror
+                                
+                                <button type="submit" class="btn btn-success d-grid mb-2 w-100">Join</button>
+                                <button type="button" class="btn btn-label-success border d-grid w-100"
+                                    data-bs-dismiss="offcanvas">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
                 </nav>
             </div>
             <div class="row">
@@ -95,19 +127,25 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-inline-flex w-100 justify-content-between">
-                                        <p class="mb-0 h6">{{ $key['team_name'] }}</p>
+                                        <a href="{{ url('u/team') . "/" . $key['team_name'] }}" class="mb-0 h6">{{ $key['team_name'] }}</a>
                                         <p class="text-sm">#{{ $key['team_id'] }}</p>
                                     </div>
                                     <p class="text-sm">
                                         {{ $key['description'] ?? '-' }}
                                     </p>
                                     <p class="text-sm">
-                                        <i class="fa-solid fa-users-line"></i> {{ $key->user->first_name ?? "-" }}
-                                    </p>
+                                        <i class="fa-solid fa-users-line"></i> {{ $key->leader->first_name ?? '-' }}
+                                    </p>{{-- {{ $key->members ?? "-" }} --}}
+                                    <p>{{ count($key->members) }} Members</p>
+
                                     <hr class="dark horizontal">
-                                    <div class="d-flex ">
-                                        <i class="material-icons text-sm my-auto me-1">schedule</i>
-                                        <p class="mb-0 text-sm"> updated 4 min ago </p>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex ">
+                                            <i class="material-icons text-sm my-auto me-1">schedule</i>
+                                            <p class="mb-0 text-sm"> updated 4 min ago </p>
+                                        </div>
+                                        <span
+                                            class="badge {{ $key['status'] == 0 ? 'bg-gradient-danger' : 'bg-gradient-success' }}">{{ $key['status'] == 0 ? 'Inactive' : 'Active' }}</span>
                                     </div>
                                 </div>
                             </div>
