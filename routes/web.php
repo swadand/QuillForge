@@ -21,7 +21,9 @@ Route::get('logout', [Website::class, 'logout']);
 
 // API 
 
-Route::post('team/create', [Team::class, 'create']);
+Route::post('u/team/create', [Team::class, 'create']);
+Route::post('u/team/join', [Team::class, 'join']);
+Route::get('u/team/{name}', [Team::class, 'details']);
 
     
 /* Route::get('/dashboard', function () {

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('team', function (Blueprint $table) {
             $table->id();
             $table->string('team_id', 50)->default("");
-            $table->integer('leader_id');
+            $table->foreign('leader_id')->references('id')->on('users');
             $table->string('team_name', 25)->unique();
             $table->string('description', 75);
             $table->dateTime('created_at');
@@ -24,13 +24,13 @@ return new class extends Migration
 
         Schema::create('topic', function (Blueprint $table) {
             $table->id();
-            $table->integer('book_id');
+            $table->foreign('book_id')->references('id')->on('book');
             $table->string('title', 30);
             $table->string('description', 255);
-            $table->integer('created_by');
-            $table->integer('team_id');
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('team_id')->references('id')->on('team');
             $table->dateTime('created_at', 25);
-            $table->integer('taken_by')->default('0');
+            $table->foreign('taken_by')->references('id')->on('users');
             $table->integer('taken_at');
             $table->integer('completed_at');
             $table->integer('status')->default('0');
@@ -40,8 +40,8 @@ return new class extends Migration
         Schema::create('discussion', function (Blueprint $table) {
             $table->id();
             $table->string('content', 100);
-            $table->integer('book_id');
-            $table->integer('created_by');
+            $table->foreign('book_id')->references('id')->on('book');
+            $table->foreign('created_by')->references('id')->on('users');
             $table->dateTime('created_at');
             $table->integer('deleted')->default('0');
         });
@@ -49,8 +49,8 @@ return new class extends Migration
         Schema::create('comment', function (Blueprint $table) {
             $table->id();
             $table->string('content', 100);
-            $table->integer('discussion_id');
-            $table->integer('created_by');
+            $table->foreign('discussion_id')->references('id')->on('discussion');
+            $table->foreign('created_by')->references('id')->on('users');
             $table->dateTime('created_at');
             $table->integer('deleted')->default('0');
         });

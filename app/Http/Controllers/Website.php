@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TeamMemberModel;
 use App\Models\TeamModel;
 
 class Website extends Controller
@@ -27,7 +28,6 @@ class Website extends Controller
     public function view_teams()
     {
         $data = TeamModel::Where(["deleted" => 0])->get();
-        session(["data" => $data]);
 
         return view('team', ["data" => $data]);
     }

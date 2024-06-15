@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('team_member', function (Blueprint $table) {
             $table->id();
-            $table->integer('team_id');
-            $table->integer('user_id');
+            $table->foreign('team_id')->references('id')->on('team');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->integer('kicked')->default('0');
             $table->integer('role');
             $table->integer('request_accepted')->default('0');
