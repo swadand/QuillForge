@@ -6,134 +6,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <script src="{{ url('assets/js/jquery.js') }}"></script>
     <title>
         Material Dashboard 2 by Creative Tim
     </title>
     @include('common.editor-header')
     <!-- Include Quill stylesheet -->
-    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.tiny.cloud/1/vtnpmaltqyvl285ga58cvk7pu11zjc6h6nl477p992d28igp/tinymce/7/tinymce.min.js"
+    <script src="https://cdn.tiny.cloud/1/pas8hdp7rn56kf713gkg51wuo1yhjj31yv6g5xlg0qxfr78a/tinymce/7/tinymce.min.js"
         referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: '#editor',
-            height: "90vh",
-            promotion: false
+            selector: 'textarea#premiumskinsandicons-fabric',
+            skin: 'fabric',
+            content_css: [
+                'fabric',
+                '//www.tiny.cloud/css/codepen.min.css'
+            ],
+            toolbar_mode: 'floating',
+            plugins: 'advlist anchor autolink charmap code codesample directionality fullpage help hr image imagetools insertdatetime link lists media nonbreaking pagebreak preview print searchreplace table template textpattern toc visualblocks visualchars wordcount',
+            toolbar: 'undo redo | formatselect | bold italic strikethrough forecolor backcolor blockquote | link image media | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat',
+            height: '92vh',
+            @if ($owned_by != session('user_id'))
+                  noneditable_class: 'my-custom-editor-container',
+            @elseif ($status == 0 || $status == 2)
+                  noneditable_class: 'my-custom-editor-container',
+            @endif
+            setup: function(editor) {
+                //Tastenkombinationen
+                editor.on('keydown', function(e, evt) {
+                    if (e.keyCode == 9) {
+                        e.preventDefault();
+                        editor.insertContent('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+                    }
+                });
+
+                function save_text() {
+                    var content = "";
+                    content = tinymce.activeEditor.getContent("myTextarea");
+                    let token = '@csrf';
+                    token = token.substr(42, 40);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ url('/save/book') }}",
+                        data: {
+                            //_method: 'PUT',
+                            "_token": token,
+                            "content": content,
+                        },
+                        dataType: "json",
+                        success: function(response) {
+
+                            if (response.statusCode == '200') {
+                                console.log(response);
+                            } else {
+                                console.log(response.msg);
+                            }
+                        },
+                        error: function(err) {
+                            response = JSON.parse(err.responseText);
+
+                            console.log(err.responseText);
+                        }
+                    });
+                    console.log(content);
+                }
+
+                editor.on('keydown', function(e, evt) {
+                    if (event.ctrlKey || event.metaKey) {
+                        switch (String.fromCharCode(event.which).toLowerCase()) {
+                            case 's':
+                                event.preventDefault();
+                                save_text();
+                                break;
+                        }
+                    }
+                });
+            }
         });
     </script>
 
-    {{-- <style>
-        * {
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
+    <style>
+        /* Add a border around the editor */
+        .my-custom-editor-container {
+            border: 1px solid #CBCBCB;
+            border-top: 0;
+            height: 80vh;
+            /* Remove top border because of the dummy header */
         }
 
-        main {
-            height: 100%;
+        .dummy-header {
+            background-color: #2b579a;
+            color: #fff;
+            display: flex;
+            font-size: 20px;
+            line-height: 50px;
+            padding: 0 1rem;
         }
-
-        #editor-container {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-        }
-
-        .ql-container {
-            z-index: 1;
-            background-color: white;
-            margin: auto;
-            width: 800px;
-            padding: 10px 60px 0;
-            overflow-y: visible;
-        }
-
-        .ql-editor {
-            color: #000000;
-            overflow-y: hidden;
-        }
-
-        .ql-toolbar,
-        #header {
-            z-index: 600;
-            position: sticky !important;
-            top: 0;
-            background-color: rgb(247, 247, 247);
-            width: 100%;
-            margin: 0;
-        }
-
-        /* .page {
-            width: 210mm;
-            height: 297mm;
-            padding: 20mm;
-            margin: 10mm auto;
-            border: 1px #D3D3D3 solid;
-            border-radius: 5px;
-            background: rgb(255, 255, 255);
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .subpage {
-            padding: 1cm;
-            border: 5px red solid;
-            height: 257mm;
-            outline: 2cm #FFEAEA solid;
-        } */
-
-        .page {
-            min-width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
-            margin: 10mm auto;
-            border: 1px #D3D3D3 solid;
-            border-radius: 5px;
-            background: rgb(255, 255, 255);
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .subpage {
-            padding: 1cm;
-            border: 5px red solid;
-            height: 257mm;
-            outline: 2cm #FFEAEA solid;
-        }
-
-
-
-        @page {
-            size: A4;
-            margin: 0;
-        }
-
-        @media print {
-
-            #header {
-                display: none;
-            }
-
-            #editor-container {
-                background-color: white !important;
-            }
-
-            .page {
-                display: block;
-                margin: 0;
-                border: initial;
-                border-radius: initial;
-                width: initial;
-                min-height: initial;
-                box-shadow: initial;
-                background: initial;
-                page-break-after: always;
-            }
-
-            .page:last-child {
-                page-break-after: auto !important;
-            }
-        }
-    </style> --}}
+    </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
@@ -142,55 +112,16 @@
         {{-- Toolbar --}}
         <div id="header">
             @include('common.editor-navbar')
-            {{-- <div id="toolbar-container">
-                <span class="ql-formats">
-                    <select class="ql-font"></select>
-                    <select class="ql-size"></select>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-bold"></button>
-                    <button class="ql-italic"></button>
-                    <button class="ql-underline"></button>
-                    <button class="ql-strike"></button>
-                </span>
-                <span class="ql-formats">
-                    <select class="ql-color"></select>
-                    <select class="ql-background"></select>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-script" value="sub"></button>
-                    <button class="ql-script" value="super"></button>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-header" value="1"></button>
-                    <button class="ql-header" value="2"></button>
-                    <button class="ql-blockquote"></button>
-                    <button class="ql-code-block"></button>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-list" value="ordered"></button>
-                    <button class="ql-list" value="bullet"></button>
-                    <button class="ql-indent" value="-1"></button>
-                    <button class="ql-indent" value="+1"></button>
-                    <select class="ql-align"></select>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-link"></button>
-                    <button class="ql-image"></button>
-                    <button class="ql-video"></button>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-clean"></button>
-                    <button id="export-pdf"><i class="fa-regular fa-file-pdf"></i></button>
-                </span>
-            </div> --}}
         </div>
 
         {{-- Editor --}}
         <div id="editor-container" class="container-fluid d-inline-block bg-gray-300">
-            <div id="editor" class="page">
-                <div class="subpage">
-                </div>
+            <div class="my-custom-editor-container">
+                <textarea id="premiumskinsandicons-fabric">
+                    @isset($content)
+{{ $content }}
+@endisset
+                </textarea>
             </div>
         </div>
     </main>
@@ -199,63 +130,16 @@
 
 </body>
 <!-- Include the Quill library -->
-<script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
 
 <!-- Initialize Quill editor -->
 <script>
-    /* var editors = [];
-    var pages = 0;
-    editors[0] = new Quill(`#e-${pages}`, {
-        modules: {
-            toolbar: "#toolbar-container",
-        },
-        theme: 'snow',
-    }); */
     $(document).ready(function() {
         setTimeout(() => {
             console.log("called");
-            $(".tox-statusbar").hide();
-        }, 300);
-    });
+            $(".tox-statusbar__branding").hide();
+            $(".tox-statusbar__path").hide();
+        }, 800);
 
-
-    const downloadpdf = () => {
-        window.print();
-    };
-    document.getElementById('export-pdf').addEventListener('click', downloadpdf);
-
-    /* $(document).on("keydown", ".ql-editor", function() {
-        if ($(this)[0].scrollHeight > 969) {
-            var el = $(this).parent().attr('id');
-            idx = el.split("-")[1];
-
-            if(editors[idx+1] != undefined) {
-                editors[idx+1].focus();
-            }
-
-            var subpage = document.createElement("div");
-            subpage.classList.add("subpage");
-            var page = document.createElement("div");
-            page.classList.add("page");
-            page.setAttribute("id", `e-${++pages}`);
-            page.appendChild(subpage);
-
-            $("#editor-container").append(page);
-
-            editors[pages] = new Quill(`#e-${pages}`, {
-                modules: {
-                    toolbar: "#toolbar-container",
-                },
-                theme: 'snow'
-            });
-
-
-            el = editors[++idx];
-            el.focus();
-        }
-
-    }) */
-    /* 
         $(window).bind('keydown', function(event) {
             if (event.ctrlKey || event.metaKey) {
                 switch (String.fromCharCode(event.which).toLowerCase()) {
@@ -269,12 +153,40 @@
 
         function save_text() {
             var content = "";
-            editors.forEach(e => {
-                content += e.root.innerHTML;
-            });
+            content = tinymce.activeEditor.getContent("myTextarea");
+            let token = '@csrf';
+            token = token.substr(42, 40);
 
+            $.ajax({
+                type: "POST",
+                url: "{{ url('/save/book') }}",
+                data: {
+                    //_method: 'PUT',
+                    "_token": token,
+                    "content": content,
+                },
+                dataType: "json",
+                success: function(response) {
+
+                    if (response.statusCode == '200') {
+                        console.log(response);
+                    } else {
+                        console.log(response.msg);
+                    }
+                },
+                error: function(err) {
+                    response = JSON.parse(err.responseText);
+
+                    console.log(err.responseText);
+                }
+            });
             console.log(content);
-        } */
+        }
+
+        $('#save-button').on('click', function() {
+            save_text();
+        });
+    });
 </script>
 
 </html>

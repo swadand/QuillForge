@@ -110,8 +110,28 @@ class Team extends Controller
         if ($team == null) {
             
         } else {
+            $request = TeamMemberModel::Where([['team_id', $team["id"]], ["request_accepted", 0], ["deleted", 0]])->get();
             $topic = TopicModel::Where('team_id', $team["id"])->get();
-            return view("team-details", ["team" => $team, "topic" => $topic]);
+
+            return view("team-details", ["team" => $team, "request" => $request, "topic" => $topic]);
         }
+    }
+
+    public function accept_request(int $team_id, int $user_id)
+    {
+        $request = TeamMemberModel::Where([['user_id', $user_id], ["team_id", $team_id], ["deleted", 0]])->first();
+
+        $request->request_accepted = 1;
+
+        $request->save();
+    }
+
+    public function reject_request(int $team_id, int $user_id)
+    {
+        $request = TeamMemberModel::Where([['user_id', $user_id], ["team_id", $team_id]])->first();
+
+        $request->deleted = 1;
+
+        $request->save();
     }
 }

@@ -16,7 +16,7 @@
             </div>
             <ul class="navbar-nav  justify-content-end">
 
-                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                <li class="nav-item d-xl-none ps-3 pe-2 pb-1 d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                         <div class="sidenav-toggler-inner">
                             <i class="sidenav-toggler-line"></i>
@@ -25,9 +25,14 @@
                         </div>
                     </a>
                 </li>
-
+                <li class="nav-item ps-3 pe-2 pb-1 d-flex align-items-center">
+                    <a href="{{ url('editor/new-book') }}" class="nav-link text-body p-0" >
+                        <button class="btn btn-success py-2" type="button"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </a>
+                </li>
                 <li class="nav-item dropdown pe-2">
-                    <a href="javascript:;" class="nav-link " id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a href="javascript:;" class="nav-link " id="dropdownMenuButton" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         <i class="material-icons cursor-pointer">
                             person
                         </i>
@@ -35,11 +40,11 @@
                     <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton">
                         <li class="mb-2">
                             <div class="dropdown-item border-radius-md">
-                                {{ session("user_name") }}
+                                {{ session('user_name') }}
                             </div>
                         </li>
                         <li class="mb-2">
-                            <a class="dropdown-item border-radius-md" href="../pages/profile.php">
+                            <a class="dropdown-item border-radius-md" href="{{ url('u/profile') }}">
                                 <div class="d-flex align-items-center py-1">
                                     <div class="my-auto">
                                         <span class="material-icons">
@@ -55,7 +60,7 @@
                             </a>
                         </li>
                         <li class="">
-                            <a class="dropdown-item border-radius-md" href="/logout">
+                            <a class="dropdown-item border-radius-md" href="{{ url('logout') }}">
                                 <div class="d-flex align-items-center py-1">
                                     <div class="my-auto">
                                         <span class="material-icons">

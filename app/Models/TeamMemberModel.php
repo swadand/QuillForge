@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\belongsTo;
 
 class TeamMemberModel extends Model
 {
@@ -21,13 +22,13 @@ class TeamMemberModel extends Model
         "request_accepted",
     ];
 
-    public function member(): HasOne
+    public function user()
     {
-        return $this->HasOne(UserModel::class, "user_id", "id");
+        return $this->belongsTo(UserModel::class, 'user_id', 'id');
     }
 
-    public function team(): HasOne
+    public function team(): belongsTo
     {
-        return $this->HasOne(TeamModel::class, "team_id", "id");
+        return $this->belongsTo(TeamModel::class, "id", "team_id");
     }
 }

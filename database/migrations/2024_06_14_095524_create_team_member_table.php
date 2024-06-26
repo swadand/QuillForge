@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('kicked')->default('0');
             $table->integer('role');
             $table->integer('request_accepted')->default('0');
+            $table->integer('deleted')->default('0');
         });
     }
 

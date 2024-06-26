@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title', 10);
             $table->string('cover', 10)->default("");
+            $table->string('description', 100)->default("");
             $table->longText('content');
             $table->foreign('created_by')->references('id')->on('users');
             $table->foreign('owned_by')->references('id')->on('users');

@@ -31,103 +31,124 @@
                 <nav aria-label="breadcrumb" class="d-flex justify-content-between">
                     <p class="h4 font-weight-bolder">{{ $team['team_name'] ?? '-' }}</p>
                     <div>
-                        <button class="btn btn-success" type="button" data-bs-target="#create-team"
-                            data-bs-toggle="offcanvas" aria-controls="offcanvasEnd">Create New Topic</button>
+                        @if (session('user_id') == $team['leader_id'])
+                            <button class="btn btn-success" type="button" data-bs-target="#create-team"
+                                data-bs-toggle="offcanvas" aria-controls="offcanvasEnd">Create New Topic</button>
+                        @endif
                         <button type="button" class="btn btn-info" data-bs-toggle="offcanvas"
                             data-bs-target="#members">
                             <i class="fa-solid fa-users"></i>
                         </button>
-                        <button type="button" class="btn btn-info" data-bs-target="#notifications"
-                            data-bs-toggle="modal">
-                            <i class="fa-regular fa-bell"></i>
-                        </button>
+                        @if (session('user_id') == $team['leader_id'])
+                            <button type="button" class="btn btn-info" data-bs-target="#notifications"
+                                data-bs-toggle="modal">
+                                <i class="fa-regular fa-bell"></i>
+                            </button>
+                        @endif
                     </div>
                     {{-- MODALS --}}
                     <!-- Modal -->
-                    <div class="modal fade" id="notifications" tabindex="-1" role="dialog"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title font-weight-normal" id="exampleModalLabel">Join Requests</h5>
-                                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal"
-                                        aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="container w-100">
-                                        <div class="row card p-3 border ">
-                                            <div class="d-inline-flex justify-content-between">
-                                                <div>
-                                                    User name Wants to join Team
-                                                </div>
-                                                <div>
-                                                    <span class="badge bg-success" style="cursor: pointer;">
-                                                        <i class="fa-solid fa-check"></i>
-                                                    </span>
-                                                    <span class="badge bg-danger" style="cursor: pointer;">
-                                                        <i class="fa-solid fa-xmark"></i>
-                                                    </span>
-                                                </div>
-                                            </div>
+                    @if (session('user_id') == $team['leader_id'])
+                        <div class="modal fade" id="notifications" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title font-weight-normal" id="exampleModalLabel">Join Requests
+                                        </h5>
+                                        <button type="button" class="btn-close text-dark" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="container w-100">
+                                            @if (isset($request))
+                                                @foreach ($request as $key)
+                                                    <div class="row card p-3 border ">
+                                                        <div class="d-inline-flex justify-content-between">
+                                                            <div>
+                                                                {{ $key->user->first_name . ' ' . $key->user?->last_name . ' wants to join ' . $team['team_name'] }}
+                                                            </div>
+                                                            <div>
+                                                                <a
+                                                                    href="{{ url('u/team/request/accept') . '/' . $team['id'] . '/' . $key['user_id'] }}">
+                                                                    <span class="badge bg-success"
+                                                                        style="cursor: pointer;">
+                                                                        <i class="fa-solid fa-check"></i>
+                                                                    </span>
+                                                                </a>
+                                                                <a
+                                                                    href="{{ url('u/team/request/reject') . '/' . $team['id'] . '/' . $key['user_id'] }}">
+                                                                    <span class="badge bg-danger"
+                                                                        style="cursor: pointer;">
+                                                                        <i class="fa-solid fa-xmark"></i>
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endif
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn bg-gradient-danger" data-bs-dismiss="modal"><i
-                                            class="fa-solid fa-xmark"></i></button>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn bg-gradient-danger" data-bs-dismiss="modal"><i
+                                                class="fa-solid fa-xmark"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {{-- OFFCANVAS --}}
-                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? '' : 'show') : '' }}"
-                        tabindex="-1" id="create-team" aria-labelledby="offcanvasEndLabel">
-                        <div class="offcanvas-header">
-                            <h5 id="offcanvasEndLabel" class="offcanvas-title">Create a New Topic</h5>
-                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                                aria-label="Close"></button>
-                        </div>
-                        <hr class="dark horizontal mt-0 mb-0">
-                        <form action="{{ url('team/create') }}" method="post">
-                            @csrf
-                            <div class="offcanvas-body mx-0 flex-grow-0">
-                                <div class="input-group input-group-outline my-3">
-                                    <label class="form-label">Topic Name</label>
-                                    <input class="form-control" type="text" name="team_name" id="team_name">
-                                </div>
-                                @error('team_name')
-                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                @enderror
-                                @error('name-error')
-                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                @enderror
-                                <div class="input-group input-group-outline my-3">
-                                    <label class="form-label">Book Name (Same as Topic name if empty)</label>
-                                    <input class="form-control" type="text" name="team_name" id="team_name">
-                                </div>
-                                @error('team_name')
-                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                @enderror
-                                @error('name-error')
-                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                @enderror
-                                <div class="input-group input-group-outline my-3">
-                                    <label class="form-label">Synopsis</label>
-                                    <input class="form-control" type="text" name="description"
-                                        id="team_description">
-                                </div>
-                                @error('description')
-                                    <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                @enderror
+                    @endif
+                    @if (session('user_id') == $team['leader_id'])
+                        {{-- OFFCANVAS --}}
+                        <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? '' : 'show') : '' }}"
+                            tabindex="-1" id="create-team" aria-labelledby="offcanvasEndLabel">
+                            <div class="offcanvas-header">
+                                <h5 id="offcanvasEndLabel" class="offcanvas-title">Create a New Topic</h5>
+                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                                    aria-label="Close"></button>
+                            </div>
+                            <hr class="dark horizontal mt-0 mb-0">
+                            <form action="{{ url('team/create') }}" method="post">
+                                @csrf
+                                <div class="offcanvas-body mx-0 flex-grow-0">
+                                    <div class="input-group input-group-outline my-3">
+                                        <label class="form-label">Topic Name</label>
+                                        <input class="form-control" type="text" name="team_name" id="team_name">
+                                    </div>
+                                    @error('team_name')
+                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                    @enderror
+                                    @error('name-error')
+                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                    @enderror
+                                    <div class="input-group input-group-outline my-3">
+                                        <label class="form-label">Book Name (Same as Topic name if empty)</label>
+                                        <input class="form-control" type="text" name="team_name" id="team_name">
+                                    </div>
+                                    @error('team_name')
+                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                    @enderror
+                                    @error('name-error')
+                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                    @enderror
+                                    <div class="input-group input-group-outline my-3">
+                                        <label class="form-label">Synopsis</label>
+                                        <input class="form-control" type="text" name="description"
+                                            id="team_description">
+                                    </div>
+                                    @error('description')
+                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
+                                    @enderror
 
-                                <button type="submit" class="btn btn-success d-grid mb-2 w-100">Create</button>
-                                <button type="button" class="btn btn-label-success border d-grid w-100"
-                                    data-bs-dismiss="offcanvas">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
+                                    <button type="submit" class="btn btn-success d-grid mb-2 w-100">Create</button>
+                                    <button type="button" class="btn btn-label-success border d-grid w-100"
+                                        data-bs-dismiss="offcanvas">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
 
                     <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? 'show' : ($errors->has('team_id') ? 'show' : '')) : '' }}"
                         tabindex="-1" id="members" aria-labelledby="offcanvasEndLabel">
@@ -145,11 +166,13 @@
                                             <span class="text-dark">User name</span>
                                             <div class="text-sm">Leader</div>
                                         </div>
-                                        <div>
-                                            <span class="badge bg-danger" style="cursor: pointer;">
-                                                kick
-                                            </span>
-                                        </div>
+                                        @if (session('user_id') == $team['leader_id'])
+                                            <div>
+                                                <span class="badge bg-danger" style="cursor: pointer;">
+                                                    kick
+                                                </span>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="row card p-3 border mb-1">
@@ -158,11 +181,13 @@
                                             <span class="text-dark">User name</span>
                                             <div class="text-sm">Member</div>
                                         </div>
-                                        <div>
-                                            <span class="badge bg-danger" style="cursor: pointer;">
-                                                kick
-                                            </span>
-                                        </div>
+                                        @if (session('user_id') == $team['leader_id'])
+                                            <div>
+                                                <span class="badge bg-danger" style="cursor: pointer;">
+                                                    kick
+                                                </span>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -405,7 +430,7 @@
                                     </div>
                                 </div>
                             </div>
-                             <div class="row my-2 mx-1">
+                            <div class="row my-2 mx-1">
                                 <div class="card z-index-4 border">
                                     <div class="d-inline-flex justify-content-between mt-3">
                                         <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
@@ -481,7 +506,7 @@
                                     </div>
                                 </div>
                             </div>
-                             <div class="row my-2 mx-1">
+                            <div class="row my-2 mx-1">
                                 <div class="card z-index-4 border">
                                     <div class="d-inline-flex justify-content-between mt-3">
                                         <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
@@ -557,7 +582,7 @@
                                     </div>
                                 </div>
                             </div>
-                             <div class="row my-2 mx-1">
+                            <div class="row my-2 mx-1">
                                 <div class="card z-index-4 border">
                                     <div class="d-inline-flex justify-content-between mt-3">
                                         <div class="h5 text-start mb-0 pt-0">Chapter 1</div>

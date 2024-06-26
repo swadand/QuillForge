@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserModel extends Model
 {
@@ -22,4 +23,9 @@ class UserModel extends Model
         'remember_me_token',
         'deleted',
     ];
+
+    public function membership(): HasMany
+    {
+        return $this->hasMany(TeamMemberModel::class, 'user_id', 'id');
+    }
 }
