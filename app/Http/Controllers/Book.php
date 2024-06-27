@@ -24,9 +24,13 @@ class Book extends Controller
 
     public function view_books()
     {
-        $books['open'] = BookModel::Where([["status", 1], ['deleted', 0]])->get();
-        $books['completed'] = BookModel::Where([["status", 2], ['deleted', 0]])->get();
-        $books['closed'] = BookModel::Where([["status", 0], ['deleted', 0]])->get();
+        $books['open'] = BookModel::Where([["status", 1], ['deleted', 0], ["owned_by", session('user_id')]])->get();
+        $books['completed'] = BookModel::Where([["status", 2], ['deleted', 0], ["owned_by", session('user_id')]])->get();
+        $books['closed'] = BookModel::Where([["status", 0], ['deleted', 0], ["owned_by", session('user_id')]])->get();
+
+        if($books['open'] == []) unset($books["closed"]);
+        if(empty($books['completed'])) unset($books["closed"]);
+        if(empty($books['closed'])) unset($books["closed"]);
 
         $_SESSION["books"] = $books;
         return view('books', ["data" => $books]);
@@ -122,7 +126,7 @@ class Book extends Controller
 
         //session(['book' => $book_row]);
         if ($flag == 0)
-            return response(["statusCode" => 400]);
+            return response(["statusCode" => 400, "msg" => $flag]);
         else
             return response(["statusCode" => 200, "msg" => "Book Updated"]);
     }

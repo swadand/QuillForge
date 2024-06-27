@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BookModel;
 use App\Models\TeamMemberModel;
 use App\Models\TeamModel;
+use App\Models\TopicModel;
 use Illuminate\Support\Facades\DB;
 
 class Website extends Controller
@@ -58,8 +59,9 @@ class Website extends Controller
     {
         /* $data = TeamModel::Where([["deleted", 0], ["status", 1]])->get(); */
         $data = TeamModel::whereHas('members', function ($query) {
-            $query->where('user_id', session('user_id'));
+            $query->where([['user_id', session('user_id')], ['request_accepted', 1]]);
         })->get();
+
 
         return view('team', ["data" => $data]);
     }

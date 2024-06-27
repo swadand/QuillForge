@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <script src="{{ url('assets/js/jquery.js') }}"></script>
     <title>
-        Material Dashboard 2 by Creative Tim
+        Editor | QuillForge
     </title>
     @include('common.editor-header')
     <!-- Include Quill stylesheet -->
@@ -27,9 +27,9 @@
             toolbar: 'undo redo | formatselect | bold italic strikethrough forecolor backcolor blockquote | link image media | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat',
             height: '92vh',
             @if ($owned_by != session('user_id'))
-                  noneditable_class: 'my-custom-editor-container',
+                noneditable_class: 'my-custom-editor-container',
             @elseif ($status == 0 || $status == 2)
-                  noneditable_class: 'my-custom-editor-container',
+                noneditable_class: 'my-custom-editor-container',
             @endif
             setup: function(editor) {
                 //Tastenkombinationen
@@ -59,12 +59,15 @@
 
                             if (response.statusCode == '200') {
                                 console.log(response);
+                                success_toastr("Saved");
                             } else {
+                                error_toastr("Could not save try again.")
                                 console.log(response.msg);
                             }
                         },
                         error: function(err) {
                             response = JSON.parse(err.responseText);
+                            error_toastr("Error occurred, try again")
 
                             console.log(err.responseText);
                         }
@@ -170,12 +173,15 @@
 
                     if (response.statusCode == '200') {
                         console.log(response);
+                        success_toastr("Saved");
                     } else {
+                        error_toastr("Could not save try again.")
                         console.log(response.msg);
                     }
                 },
                 error: function(err) {
                     response = JSON.parse(err.responseText);
+                    error_toastr("Error occurred, try again")
 
                     console.log(err.responseText);
                 }

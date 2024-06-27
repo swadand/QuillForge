@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <title>
-        Material Dashboard 2 by Creative Tim
+        Team Details | QuillForge
     </title>
 
     @include('common.header')
@@ -110,24 +110,15 @@
                                     aria-label="Close"></button>
                             </div>
                             <hr class="dark horizontal mt-0 mb-0">
-                            <form action="{{ url('team/create') }}" method="post">
+                            <form action="{{ url('u/topic/create') }}" method="post">
                                 @csrf
                                 <div class="offcanvas-body mx-0 flex-grow-0">
+                                    <input type="hidden" name="team_id" value="{{ $team['team_id'] }}">
                                     <div class="input-group input-group-outline my-3">
                                         <label class="form-label">Topic Name</label>
-                                        <input class="form-control" type="text" name="team_name" id="team_name">
+                                        <input class="form-control" type="text" name="title" id="team_name">
                                     </div>
-                                    @error('team_name')
-                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                    @enderror
-                                    @error('name-error')
-                                        <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
-                                    @enderror
-                                    <div class="input-group input-group-outline my-3">
-                                        <label class="form-label">Book Name (Same as Topic name if empty)</label>
-                                        <input class="form-control" type="text" name="team_name" id="team_name">
-                                    </div>
-                                    @error('team_name')
+                                    @error('title')
                                         <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
                                     @enderror
                                     @error('name-error')
@@ -160,172 +151,82 @@
                         <hr class="dark horizontal mt-0 mb-0">
                         <div class="offcanvas-body mx-0 flex-grow-0">
                             <div class="container w-100">
-                                <div class="row card p-3 border mb-1">
-                                    <div class="d-inline-flex justify-content-between">
-                                        <div>
-                                            <span class="text-dark">User name</span>
-                                            <div class="text-sm">Leader</div>
-                                        </div>
-                                        @if (session('user_id') == $team['leader_id'])
-                                            <div>
-                                                <span class="badge bg-danger" style="cursor: pointer;">
-                                                    kick
-                                                </span>
+                                @isset($data['member'])
+                                    @foreach ($data['member'] as $key)
+                                        <div class="row card p-3 border mb-1">
+                                            <div class="d-inline-flex justify-content-between">
+                                                <div>
+                                                    {{-- <div>{{ str_split($key->user?->first_name)[0] }}</div> --}}
+                                                        <span
+                                                            class="bg-grey border rounded-circle d-inline-flex justify-content-center align-items-center" style="margin-right: 9px; width: 30px; height:30px;">{{ str_split($key->user?->first_name)[0] ?? '?' }}
+                                                        </span>
+                                                    <span class="text-dark">{{ $key->user?->first_name }}</span>
+                                                    <div class="text-sm">{{ $key['role'] == 1 ? 'Leader' : 'Member' }}
+                                                    </div>
+                                                </div>
+                                                @if (session('user_id') == $team['leader_id'])
+                                                    @if ($key['user_id'] != session('user_id'))
+                                                        <div class="kick" data-id="{{ $key['id'] }}">
+                                                            <span class="badge bg-danger" style="cursor: pointer;">
+                                                                kick
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                @endif
                                             </div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="row card p-3 border mb-1">
-                                    <div class="d-inline-flex justify-content-between">
-                                        <div>
-                                            <span class="text-dark">User name</span>
-                                            <div class="text-sm">Member</div>
                                         </div>
-                                        @if (session('user_id') == $team['leader_id'])
-                                            <div>
-                                                <span class="badge bg-danger" style="cursor: pointer;">
-                                                    kick
-                                                </span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
+                                    @endforeach
+                                @endisset
                             </div>
                         </div>
                     </div>
                 </nav>
             </div>
             <div class="row">
-                @if (isset($data))
-                    @foreach ($data as $key)
-                        <div class="col-lg-4 col-md-6 mt-1 mb-4">
-                            <div class="card z-index-2 ">
-                                <div
-                                    class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent pt-4">
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-inline-flex w-100 justify-content-between">
-                                        <p class="mb-0 h6">{{ $key['team_name'] }}</p>
-                                        <p class="text-sm">#{{ $key['team_id'] }}</p>
-                                    </div>
-                                    <p class="text-sm">
-                                        {{ $key['description'] ?? '-' }}
-                                    </p>
-                                    <p class="text-sm">
-                                        <i class="fa-solid fa-users-line"></i> {{ $key->leader->first_name ?? '-' }}
-                                    </p>{{ $key->members ?? '-' }}
-                                    <hr class="dark horizontal">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="d-flex ">
-                                            <i class="material-icons text-sm my-auto me-1">schedule</i>
-                                            <p class="mb-0 text-sm"> updated 4 min ago </p>
-                                        </div>
-                                        <span
-                                            class="badge {{ $key['status'] == 0 ? 'bg-gradient-danger' : 'bg-gradient-success' }}">{{ $key['status'] == 0 ? 'Inactive' : 'Active' }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                @else
-                    {{-- <div class="text-center mt-5">
+                {{-- <div class="text-center mt-5">
                       <h5 class="text-dark">No Teams, Create a New One!</h5>
                     </div> --}}
-                    <div class="{{-- col-lg-4 col-md-6 mt-1 mb-4 --}}w-50">
-                        <div class="card z-index-2">
-                            <div class="card-header pt-4 pb-0 mb-0 text-dark h4">
-                                Topics
-                            </div>
-                            <hr class="dark horizontal mb-0">
-                            <div class="container overflow-auto topics" style="max-height: 360px !important;">
-                                <div class="row my-2 mx-1">
-                                    <div class="card z-index-4 border">
-                                        <div class="d-inline-flex justify-content-between mt-3">
-                                            <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                            <div class="d-inline-flex justify-content-between">
-                                                <span
-                                                    class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                                <a href="javascript:0;" class="mx-1">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                </a>
+                <div class="{{-- col-lg-4 col-md-6 mt-1 mb-4 --}}w-50">
+                    <div class="card z-index-2">
+                        <div class="card-header pt-4 pb-0 mb-0 text-dark h4">
+                            Topics
+                        </div>
+                        <hr class="dark horizontal mb-0">
+                        <div class="container overflow-auto topics" style="max-height: 360px !important;">
+                            @isset($data['topic'])
+                                @foreach ($data['topic'] as $key)
+                                    <div class="row my-2 mx-1">
+                                        <div class="card z-index-4 border">
+                                            <div class="d-inline-flex justify-content-between mt-3">
+                                                <div class="h5 text-start mb-0 pt-0">{{ $key['title'] }}</div>
+                                                <div class="d-inline-flex justify-content-between">
+                                                    <span
+                                                        class="badge badge-pill bg-gradient-{{ $key['status'] == 0 ? 'success' : ($key['status'] == 1 ? 'warning' : 'info   ') }} w-100 mx-2">
+                                                        {{ $key['status'] == 0 ? 'Not taken' : ($key['status'] == 1 ? 'Taken' : 'Completed') }}
+                                                    </span>
+                                                    @if ($key['status'] == 0)
+                                                        <a href="javascript:0;" class="mx-1 take"
+                                                            data-id="{{ $key['id'] }}">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="card-body text-sm px-1">
+                                                {{ $key['description'] }}
                                             </div>
                                         </div>
-                                        <div class="card-body text-sm px-1">
-                                            Write the Synopsis for the chapter 1.
-                                        </div>
                                     </div>
+                                @endforeach
+                                @else 
+                                <div class="text-center mt-5">
+                                    <h5 class="text-dark">No Topics.</h5>
                                 </div>
-                                <div class="row my-2 mx-1">
-                                    <div class="card z-index-4 border">
-                                        <div class="d-inline-flex justify-content-between mt-3">
-                                            <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                            <div class="d-inline-flex justify-content-between">
-                                                <span
-                                                    class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                                <a href="javascript:0;" class="mx-1">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body text-sm px-1">
-                                            Write the Synopsis for the chapter 1.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row my-2 mx-1">
-                                    <div class="card z-index-4 border">
-                                        <div class="d-inline-flex justify-content-between mt-3">
-                                            <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                            <div class="d-inline-flex justify-content-between">
-                                                <span
-                                                    class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                                <a href="javascript:0;" class="mx-1">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body text-sm px-1">
-                                            Write the Synopsis for the chapter 1.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row my-2 mx-1">
-                                    <div class="card z-index-4 border">
-                                        <div class="d-inline-flex justify-content-between mt-3">
-                                            <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                            <div class="d-inline-flex justify-content-between">
-                                                <span
-                                                    class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                                <a href="javascript:0;" class="mx-1">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body text-sm px-1">
-                                            Write the Synopsis for the chapter 1.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row my-2 mx-1">
-                                    <div class="card z-index-4 border">
-                                        <div class="d-inline-flex justify-content-between mt-3">
-                                            <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                            <div class="d-inline-flex justify-content-between">
-                                                <span
-                                                    class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                                <a href="javascript:0;" class="mx-1">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body text-sm px-1">
-                                            Write the Synopsis for the chapter 1.
-                                        </div>
-                                    </div>
-                                </div>
-                                </tbody>
-                                </table>
-                                {{-- <h6 class="mb-0 ">Team Name </h6>
+                            @endisset
+
+                            </tbody>
+                            </table>
+                            {{-- <h6 class="mb-0 ">Team Name </h6>
                                 <p class="text-sm">
                                     Creator: AB
                                 </p>
@@ -341,323 +242,105 @@
                                         <span class="mb-0 text-sm"> updated 4 min ago </span>
                                     </div>
                                 </div> --}}
-                            </div>
-                            <div class="card-footer pt-4 pb-0 mb-0 text-dark">
-                            </div>
+                        </div>
+                        <div class="card-footer pt-4 pb-0 mb-0 text-dark">
                         </div>
                     </div>
-                @endif
+                </div>
+
                 <div class="{{-- col-lg-4 col-md-6 mt-1 mb-4 --}}w-50">
                     <div class="card z-index-2">
                         <div class="card-header pt-4 pb-0 mb-0 text-dark h4">
                             Your Topics
                         </div>
                         <hr class="dark horizontal mb-0">
-                        <div class="container overflow-auto topics" style="max-height: 360px !important;">
-                            <div class="row my-2 mx-1">
-                                <div class="card z-index-4 border">
-                                    <div class="d-inline-flex justify-content-between mt-3">
-                                        <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                        <div class="d-inline-flex justify-content-between">
-                                            <span class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                            <a href="javascript:0;" class="mx-1">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                            <li class="dropdown pe-2 mx-2" style="list-style: none;">
-                                                <a href="javascript:;" class="nav-link " id="dropdownMenuButton"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4"
-                                                    aria-labelledby="dropdownMenuButton">
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Edit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
+                        <div class="container overflow-auto topics" style="max-height: 480px !important;">
+                            @isset($data['your_topic'])
+                                @foreach ($data['your_topic'] as $key)
+                                    <div class="row my-2 mx-1">
+                                        <div class="card z-index-4 border">
+                                            <div class="d-inline-flex justify-content-between mt-3">
+                                                <div class="h5 text-start mb-0 pt-0">{{ $key['title'] }}</div>
+                                                <div class="d-inline-flex justify-content-between">
+                                                    <span
+                                                        class="badge badge-pill bg-gradient-{{ $key['status'] == 0 ? 'success' : ($key['status'] == 1 ? 'warning' : 'info   ') }} w-100 mx-2">{{ $key['status'] == 0 ? 'Not taken' : ($key['status'] == 1 ? 'Taken' : 'Completed') }}</span>
+                                                    <a href="javascript:0;" class="mx-1">
+                                                        <i class="fa-regular fa-pen-to-square"></i>
+                                                    </a>
+                                                    <li class="dropdown pe-2 mx-2 z-index-70"
+                                                        style="list-style: none; z-index: 60;">
+                                                        <a href="javascript:;" class="nav-link " id="dropdownMenuButton"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fa-solid fa-ellipsis-vertical"></i>
                                                         </a>
+                                                        <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4"
+                                                            aria-labelledby="dropdownMenuButton">
+                                                            <li class="mb-2">
+                                                                <a class="dropdown-item border-radius-md"
+                                                                    href="{{ url('u/editor/b') . '/' . $key->book?->book_id ?? '-' }}">
+                                                                    <div class="d-flex align-items-center py-1">
+                                                                        <div class="my-auto">
+                                                                            <span>
+                                                                                <i class="fa-regular fa-pen-to-square"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="ms-2">
+                                                                            <h6 class="text-sm font-weight-normal mb-0">
+                                                                                Edit
+                                                                            </h6>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </li>
+                                                            <li class="mb-2">
+                                                                <a class="dropdown-item border-radius-md forfeit"
+                                                                    href="javascript:0;" data-id="{{ $key['id'] }}">
+                                                                    <div class="d-flex align-items-center py-1 ">
+                                                                        <div class="my-auto">
+                                                                            <span>
+                                                                                <i class="fa-solid fa-xmark"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="ms-2">
+                                                                            <h6 class="text-sm font-weight-normal mb-0">
+                                                                                Forfeit
+                                                                            </h6>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </li>
+                                                            <li class="mb-2">
+                                                                <a class="dropdown-item border-radius-md complete"
+                                                                    href="javascript:0;" data-id="{{ $key['id'] }}">
+                                                                    <div class="d-flex align-items-center py-1">
+                                                                        <div class="my-auto">
+                                                                            <span>
+                                                                                <i class="fa-solid fa-book"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="ms-2">
+                                                                            <h6 class="text-sm font-weight-normal mb-0">
+                                                                                Mark as Complete
+                                                                            </h6>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
                                                     </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Forfeit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-book"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Mark as Complete
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
+                                                </div>
+                                            </div>
+                                            <div class="card-body text-sm px-1">
+                                                {{ $key['description'] }}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="card-body text-sm px-1">
-                                        Write the Synopsis for the chapter 1.
-                                    </div>
+                                @endforeach
+                                @else 
+                                <div class="text-center mt-5">
+                                    <h5 class="text-dark">No Topics.</h5>
                                 </div>
-                            </div>
-                            <div class="row my-2 mx-1">
-                                <div class="card z-index-4 border">
-                                    <div class="d-inline-flex justify-content-between mt-3">
-                                        <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                        <div class="d-inline-flex justify-content-between">
-                                            <span class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                            <a href="javascript:0;" class="mx-1">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                            <li class="dropdown pe-2 mx-2" style="list-style: none;">
-                                                <a href="javascript:;" class="nav-link " id="dropdownMenuButton"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4"
-                                                    aria-labelledby="dropdownMenuButton">
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Edit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Forfeit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-book"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Mark as Complete
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </div>
-                                    </div>
-                                    <div class="card-body text-sm px-1">
-                                        Write the Synopsis for the chapter 1.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row my-2 mx-1">
-                                <div class="card z-index-4 border">
-                                    <div class="d-inline-flex justify-content-between mt-3">
-                                        <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                        <div class="d-inline-flex justify-content-between">
-                                            <span class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                            <a href="javascript:0;" class="mx-1">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                            <li class="dropdown pe-2 mx-2" style="list-style: none;">
-                                                <a href="javascript:;" class="nav-link " id="dropdownMenuButton"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4"
-                                                    aria-labelledby="dropdownMenuButton">
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Edit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Forfeit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-book"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Mark as Complete
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </div>
-                                    </div>
-                                    <div class="card-body text-sm px-1">
-                                        Write the Synopsis for the chapter 1.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row my-2 mx-1">
-                                <div class="card z-index-4 border">
-                                    <div class="d-inline-flex justify-content-between mt-3">
-                                        <div class="h5 text-start mb-0 pt-0">Chapter 1</div>
-                                        <div class="d-inline-flex justify-content-between">
-                                            <span class="badge badge-pill bg-gradient-warning w-100 mx-2">Open</span>
-                                            <a href="javascript:0;" class="mx-1">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                            <li class="dropdown pe-2 mx-2" style="list-style: none;">
-                                                <a href="javascript:;" class="nav-link " id="dropdownMenuButton"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4"
-                                                    aria-labelledby="dropdownMenuButton">
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Edit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Forfeit
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="mb-2">
-                                                        <a class="dropdown-item border-radius-md"
-                                                            href="javascript:0;">
-                                                            <div class="d-flex align-items-center py-1">
-                                                                <div class="my-auto">
-                                                                    <span>
-                                                                        <i class="fa-solid fa-book"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="ms-2">
-                                                                    <h6 class="text-sm font-weight-normal mb-0">
-                                                                        Mark as Complete
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </div>
-                                    </div>
-                                    <div class="card-body text-sm px-1">
-                                        Write the Synopsis for the chapter 1.
-                                    </div>
-                                </div>
-                            </div>
+                            @endisset
                             </tbody>
                             </table>
                             {{-- <h6 class="mb-0 ">Team Name </h6>
@@ -691,3 +374,192 @@
 </body>
 
 </html>
+<script>
+    $(document).on("click", ".take", function() {
+        console.log("triggered");
+        let token = '@csrf';
+        token = token.substr(42, 40);
+        var thisID = $(this).attr('data-id');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('api/topic/take') }}",
+            dataType: "json",
+            data: {
+                "_token": token,
+                "id": thisID,
+            },
+            cache: true,
+            success: function(response) {
+                if (response.statusCode == 200) {
+                    success_toastr('Topic Taken.');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    error_toastr(response.msg);
+                }
+            },
+            error: function(err) {
+                response = JSON.parse(err.responseText);
+
+                if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    toastr['error']('something went wrong please try again', '', {
+                        timeOut: 2000
+                    });
+                }
+            }
+        });
+    });
+
+    $(document).on("click", ".forfeit", function() {
+        console.log("triggered");
+        let token = '@csrf';
+        token = token.substr(42, 40);
+        var thisID = $(this).attr('data-id');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('api/topic/forfeit') }}",
+            dataType: "json",
+            data: {
+                "_token": token,
+                "id": thisID,
+            },
+            cache: true,
+            success: function(response) {
+                if (response.statusCode == 200) {
+                    success_toastr('Topic Updated.');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    error_toastr(response.msg);
+                }
+            },
+            error: function(err) {
+                response = JSON.parse(err.responseText);
+
+                if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    toastr['error']('something went wrong please try again', '', {
+                        timeOut: 2000
+                    });
+                }
+            }
+        });
+    });
+
+    $(document).on("click", ".complete", function() {
+        console.log("triggered");
+        let token = '@csrf';
+        token = token.substr(42, 40);
+        var thisID = $(this).attr('data-id');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('api/topic/complete') }}",
+            dataType: "json",
+            data: {
+                "_token": token,
+                "id": thisID,
+            },
+            cache: true,
+            success: function(response) {
+                if (response.statusCode == 200) {
+                    success_toastr('Topic Updated.');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    error_toastr(response.msg);
+                }
+            },
+            error: function(err) {
+                response = JSON.parse(err.responseText);
+
+                if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    toastr['error']('something went wrong please try again', '', {
+                        timeOut: 2000
+                    });
+                }
+            }
+        });
+    });
+
+    $(document).on("click", ".kick", function() {
+        console.log("triggered");
+        let token = '@csrf';
+        token = token.substr(42, 40);
+        var thisID = $(this).attr('data-id');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('api/team/kick') }}",
+            dataType: "json",
+            data: {
+                "_token": token,
+                "id": thisID,
+            },
+            cache: true,
+            success: function(response) {
+                if (response.statusCode == 200) {
+                    success_toastr('Member kicked.');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    error_toastr(response.msg);
+                }
+            },
+            error: function(err) {
+                response = JSON.parse(err.responseText);
+
+                if (response.statusCode == '401') {
+                    error_toastr(response.msg);
+                    setTimeout(function() {
+                        window.location = response.redirect;
+                    }, 1000);
+                } else {
+                    toastr['error']('something went wrong please try again', '', {
+                        timeOut: 2000
+                    });
+                }
+            }
+        });
+    });
+</script>

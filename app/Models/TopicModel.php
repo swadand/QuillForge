@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TopicModel extends Model
 {
@@ -25,4 +26,9 @@ class TopicModel extends Model
         "status",
         "deleted",
     ];
+
+    public function book(): HasOne
+    {
+        return $this->HasOne(BookModel::class, 'book_id', 'book_id');
+    }
 }

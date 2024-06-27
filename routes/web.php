@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Website;
 use App\Http\Controllers\Team;
 use App\Http\Controllers\Book;
+use App\Http\Controllers\Topic;
 use App\Http\Middleware\LoginAuth;
 use Illuminate\Support\Facades\Route;
 
@@ -30,10 +31,16 @@ Route::middleware([LoginAuth::class])->group(
 
         // API 
 
+        Route::post('api/team/kick', [Team::class, 'kick']);
+        Route::post('api/topic/take', [Topic::class, 'take']);
         Route::post('api/book/show', [Book::class, 'show']);
         Route::post('api/book/update', [Book::class, 'update']);
         Route::post('api/book/forfeit', [Book::class, 'forfeit']);
         Route::post('api/book/complete', [Book::class, 'complete']);
+
+        Route::post('u/topic/create', [Topic::class, 'create']);
+        Route::post('api/topic/forfeit', [Topic::class, 'forfeit']);
+        Route::post('api/topic/complete', [Topic::class, 'complete']);
 
         Route::post('u/team/create', [Team::class, 'create']);
         Route::post('u/team/join', [Team::class, 'join']);

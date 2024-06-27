@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <title>
-        Material Dashboard 2 by Creative Tim
+        Teams | QuillForge
     </title>
 
     @include('common.header')
@@ -33,8 +33,8 @@
                             data-bs-toggle="offcanvas" aria-controls="offcanvasEnd">Join Team</button>
                     </div>
                     {{-- OFFCANVAS --}}
-                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? '' : 'show') : '' }}" tabindex="-1"
-                        id="create-team" aria-labelledby="offcanvasEndLabel">
+                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? '' : 'show') : '' }}"
+                        tabindex="-1" id="create-team" aria-labelledby="offcanvasEndLabel">
                         <div class="offcanvas-header">
                             <h5 id="offcanvasEndLabel" class="offcanvas-title">Create a New Team</h5>
                             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
@@ -89,8 +89,8 @@
                         </form>
                     </div>
 
-                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? "show" : ($errors->has('team_id') ? 'show' : '')) : ''  }}" tabindex="-1"
-                        id="join-team" aria-labelledby="offcanvasEndLabel">
+                    <div class="offcanvas offcanvas-end {{ $errors->any() ? ($errors->has('join-error') ? 'show' : ($errors->has('team_id') ? 'show' : '')) : '' }}"
+                        tabindex="-1" id="join-team" aria-labelledby="offcanvasEndLabel">
                         <div class="offcanvas-header">
                             <h5 id="offcanvasEndLabel" class="offcanvas-title">Join a Team</h5>
                             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
@@ -109,7 +109,7 @@
                                 @error('join-error')
                                     <div class="p-0 mt-0 mb-2 text-sm text-danger">{{ $message }}</div>
                                 @enderror
-                                
+
                                 <button type="submit" class="btn btn-success d-grid mb-2 w-100">Join</button>
                                 <button type="button" class="btn btn-label-success border d-grid w-100"
                                     data-bs-dismiss="offcanvas">Cancel</button>
@@ -123,11 +123,13 @@
                     @foreach ($data as $key)
                         <div class="col-lg-4 col-md-6 mt-1 mb-4">
                             <div class="card z-index-2 ">
-                                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent pt-4">
+                                <div
+                                    class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent pt-4">
                                 </div>
                                 <div class="card-body">
                                     <div class="d-inline-flex w-100 justify-content-between">
-                                        <a href="{{ url('u/team') . "/" . $key['team_name'] }}" class="mb-0 h6">{{ $key['team_name'] }}</a>
+                                        <a href="{{ url('u/team') . '/' . $key['team_name'] }}"
+                                            class="mb-0 h6">{{ $key['team_name'] }}</a>
                                         <p class="text-sm">#{{ $key['team_id'] }}</p>
                                     </div>
                                     <p class="text-sm">
@@ -136,14 +138,10 @@
                                     <p class="text-sm">
                                         <i class="fa-solid fa-users-line"></i> {{ $key->leader->first_name ?? '-' }}
                                     </p>{{-- {{ $key->members ?? "-" }} --}}
-                                    <p>{{ count($key->members) }} Members</p>
+                                    <p>{{ \App\Models\TeamMemberModel::Where([['request_accepted', 1], ['team_id', $key["id"]]])->count() }} Members</p>
 
                                     <hr class="dark horizontal">
                                     <div class="d-flex justify-content-between">
-                                        <div class="d-flex ">
-                                            <i class="material-icons text-sm my-auto me-1">schedule</i>
-                                            <p class="mb-0 text-sm"> updated 4 min ago </p>
-                                        </div>
                                         <span
                                             class="badge {{ $key['status'] == 0 ? 'bg-gradient-danger' : 'bg-gradient-success' }}">{{ $key['status'] == 0 ? 'Inactive' : 'Active' }}</span>
                                     </div>

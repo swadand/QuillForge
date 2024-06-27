@@ -33,7 +33,7 @@
                     <span class="nav-link-text ms-1">Teams</span>
                 </a>
             </li>
-            <li class="nav-item mt-3">
+            {{-- <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
             </li>
             <li class="nav-item">
@@ -43,7 +43,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Profile</span>
                 </a>
-            </li>
+            </li> --}}
             
         </ul>
     </div>
